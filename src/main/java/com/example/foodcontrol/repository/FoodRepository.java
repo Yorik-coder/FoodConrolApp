@@ -1,0 +1,11 @@
+package com.example.foodcontrol.repository;
+
+import com.example.foodcontrol.entity.Food;
+import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
+
+public interface FoodRepository extends JpaRepository<Food, Long> {
+
+    List<Food> findByCaloriesGreaterThan(int calories);
+
+}
