@@ -8,43 +8,45 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class FoodService {
 
     private final FoodRepository foodRepository;
+    private final FoodMapper foodMapper;
 
-    public FoodService(FoodRepository foodRepository) {
+    public FoodService(FoodRepository foodRepository, FoodMapper foodMapper) {
         this.foodRepository = foodRepository;
+        this.foodMapper = foodMapper;
     }
 
     public FoodDto createFood(FoodDto dto) {
-        Food food = FoodMapper.toEntity(dto);
+        Food food = foodMapper.toEntity(dto);
         Food saved = foodRepository.save(food);
-        return FoodMapper.toDto(saved);
+        return foodMapper.toDto(saved);
     }
 
     public FoodDto getFoodById(Long id) {
         Optional<Food> food = foodRepository.findById(id);
-        return food.map(FoodMapper::toDto).orElse(null);
+        return food.map(foodMapper::toDto).orElse(null);
     }
 
     public List<FoodDto> getAllFoods() {
         return foodRepository.findAll()
                 .stream()
-                .map(FoodMapper::toDto)
-                .collect(Collectors.toList());
+                .map(foodMapper::toDto)
+                .toList();
     }
 
     public List<FoodDto> getFoodsByMinCalories(int minCalories) {
         return foodRepository.findByCaloriesGreaterThan(minCalories)
                 .stream()
-                .map(FoodMapper::toDto)
-                .collect(Collectors.toList());
+                .map(foodMapper::toDto)
+                .toList();
     }
 
     public FoodDto updateFood(Long id, FoodDto dto) {
+
         Optional<Food> existing = foodRepository.findById(id);
 
         if (existing.isEmpty()) {
@@ -61,7 +63,7 @@ public class FoodService {
 
         Food saved = foodRepository.save(food);
 
-        return FoodMapper.toDto(saved);
+        return foodMapper.toDto(saved);
     }
 
     public void deleteFood(Long id) {

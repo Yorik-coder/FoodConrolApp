@@ -2,34 +2,15 @@ package com.example.foodcontrol.mapper;
 
 import com.example.foodcontrol.dto.UserDto;
 import com.example.foodcontrol.entity.User;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-public class UserMapper {
+@Mapper(componentModel = "spring")
+public interface UserMapper {
 
-    public static UserDto toDto(User user) {
+    UserDto toDto(User user);
 
-        if (user == null) {
-            return null;
-        }
-
-        UserDto dto = new UserDto();
-        dto.setId(user.getId());
-        dto.setName(user.getName());
-        dto.setEmail(user.getEmail());
-
-        return dto;
-    }
-
-    public static User toEntity(UserDto dto) {
-
-        if (dto == null) {
-            return null;
-        }
-
-        User user = new User();
-        user.setId(dto.getId());
-        user.setName(dto.getName());
-        user.setEmail(dto.getEmail());
-
-        return user;
-    }
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "dayPlans", ignore = true)
+    User toEntity(UserDto dto);
 }

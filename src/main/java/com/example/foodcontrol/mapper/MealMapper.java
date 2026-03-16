@@ -3,37 +3,26 @@ package com.example.foodcontrol.mapper;
 import com.example.foodcontrol.dto.MealDto;
 import com.example.foodcontrol.entity.Meal;
 import com.example.foodcontrol.entity.MealFood;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Collections;
+@Mapper(componentModel = "spring")
+public interface MealMapper {
 
-public class MealMapper {
+    @Mapping(target = "dayPlanId", source = "dayPlan.id")
+    @Mapping(target = "mealFoodIds", source = "mealFoods")
+    MealDto toDto(Meal meal);
 
-    public static MealDto toDto(Meal meal) {
+    default List<Long> mapMealFoodsToIds(List<MealFood> mealFoods) {
 
-        if (meal == null) {
-            return null;
+        if (mealFoods == null) {
+            return Collections.emptyList();
         }
 
-        MealDto dto = new MealDto();
-
-        dto.setId(meal.getId());
-        dto.setName(meal.getName());
-
-        if (meal.getDayPlan() != null) {
-            dto.setDayPlanId(meal.getDayPlan().getId());
-        }
-
-        if (meal.getMealFoods() != null) {
-
-            List<Long> ids = meal.getMealFoods()
-                    .stream()
-                    .map(MealFood::getId)
-                    .collect(Collectors.toList());
-
-            dto.setMealFoodIds(ids);
-        }
-
-        return dto;
+        return mealFoods.stream()
+                .map(MealFood::getId)
+                .toList();
     }
 }

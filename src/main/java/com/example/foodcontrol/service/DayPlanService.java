@@ -9,17 +9,21 @@ import com.example.foodcontrol.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class DayPlanService {
 
     private final DayPlanRepository dayPlanRepository;
     private final UserRepository userRepository;
+    private final DayPlanMapper dayPlanMapper;
 
-    public DayPlanService(DayPlanRepository dayPlanRepository, UserRepository userRepository) {
+    public DayPlanService(DayPlanRepository dayPlanRepository,
+                          UserRepository userRepository,
+                          DayPlanMapper dayPlanMapper) {
+
         this.dayPlanRepository = dayPlanRepository;
         this.userRepository = userRepository;
+        this.dayPlanMapper = dayPlanMapper;
     }
 
     public DayPlanDto createDayPlan(DayPlanDto dto) {
@@ -33,19 +37,21 @@ public class DayPlanService {
 
         DayPlan saved = dayPlanRepository.save(plan);
 
-        return DayPlanMapper.toDto(saved);
+        return dayPlanMapper.toDto(saved);
     }
 
     public List<DayPlanDto> getAllPlans() {
+
         return dayPlanRepository.findAll()
                 .stream()
-                .map(DayPlanMapper::toDto)
-                .collect(Collectors.toList());
+                .map(dayPlanMapper::toDto)
+                .toList();
     }
 
     public DayPlanDto getPlan(Long id) {
+
         return dayPlanRepository.findById(id)
-                .map(DayPlanMapper::toDto)
+                .map(dayPlanMapper::toDto)
                 .orElse(null);
     }
 

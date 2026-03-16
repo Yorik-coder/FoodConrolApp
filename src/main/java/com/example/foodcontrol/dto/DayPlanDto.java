@@ -5,7 +5,6 @@ import java.util.List;
 
 public class DayPlanDto {
 
-    private Long id;
     private LocalDate date;
     private Long userId;
     private List<Long> mealIds;
@@ -13,15 +12,10 @@ public class DayPlanDto {
     public DayPlanDto() {
     }
 
-    public DayPlanDto(Long id, LocalDate date, Long userId, List<Long> mealIds) {
-        this.id = id;
+    public DayPlanDto(LocalDate date, Long userId, List<Long> mealIds) {
         this.date = date;
         this.userId = userId;
         this.mealIds = mealIds;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public LocalDate getDate() {
@@ -34,10 +28,6 @@ public class DayPlanDto {
 
     public List<Long> getMealIds() {
         return mealIds;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public void setDate(LocalDate date) {

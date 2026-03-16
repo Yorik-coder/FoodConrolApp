@@ -2,28 +2,13 @@ package com.example.foodcontrol.mapper;
 
 import com.example.foodcontrol.dto.MealFoodDto;
 import com.example.foodcontrol.entity.MealFood;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-public class MealFoodMapper {
+@Mapper(componentModel = "spring")
+public interface MealFoodMapper {
 
-    public static MealFoodDto toDto(MealFood entity) {
-
-        if (entity == null) {
-            return null;
-        }
-
-        MealFoodDto dto = new MealFoodDto();
-
-        dto.setId(entity.getId());
-        dto.setGrams(entity.getGrams());
-
-        if (entity.getMeal() != null) {
-            dto.setMealId(entity.getMeal().getId());
-        }
-
-        if (entity.getFood() != null) {
-            dto.setFoodId(entity.getFood().getId());
-        }
-
-        return dto;
-    }
+    @Mapping(target = "mealId", source = "meal.id")
+    @Mapping(target = "foodId", source = "food.id")
+    MealFoodDto toDto(MealFood entity);
 }

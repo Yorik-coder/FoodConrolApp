@@ -9,40 +9,46 @@ import com.example.foodcontrol.repository.FoodRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class DietService {
 
     private final DietRepository dietRepository;
     private final FoodRepository foodRepository;
+    private final DietMapper dietMapper;
 
-    public DietService(DietRepository dietRepository, FoodRepository foodRepository) {
+    public DietService(DietRepository dietRepository,
+                       FoodRepository foodRepository,
+                       DietMapper dietMapper) {
+
         this.dietRepository = dietRepository;
         this.foodRepository = foodRepository;
+        this.dietMapper = dietMapper;
     }
 
     public DietDto createDiet(DietDto dto) {
 
         List<Food> foods = foodRepository.findAllById(dto.getFoodIds());
 
-        Diet diet = DietMapper.toEntity(dto, foods);
+        Diet diet = dietMapper.toEntity(dto, foods);
 
         Diet saved = dietRepository.save(diet);
 
-        return DietMapper.toDto(saved);
+        return dietMapper.toDto(saved);
     }
 
     public List<DietDto> getAllDiets() {
+
         return dietRepository.findAll()
                 .stream()
-                .map(DietMapper::toDto)
-                .collect(Collectors.toList());
+                .map(dietMapper::toDto)
+                .toList();
     }
 
     public DietDto getDietById(Long id) {
+
         return dietRepository.findById(id)
-                .map(DietMapper::toDto)
+                .map(dietMapper::toDto)
                 .orElse(null);
     }
 

@@ -7,38 +7,41 @@ import com.example.foodcontrol.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository,
+                       UserMapper userMapper) {
+
         this.userRepository = userRepository;
+        this.userMapper = userMapper;
     }
 
     public UserDto createUser(UserDto dto) {
 
-        User user = UserMapper.toEntity(dto);
+        User user = userMapper.toEntity(dto);
 
         User saved = userRepository.save(user);
 
-        return UserMapper.toDto(saved);
+        return userMapper.toDto(saved);
     }
 
     public List<UserDto> getAllUsers() {
 
         return userRepository.findAll()
                 .stream()
-                .map(UserMapper::toDto)
-                .collect(Collectors.toList());
+                .map(userMapper::toDto)
+                .toList();
     }
 
     public UserDto getUserById(Long id) {
 
         return userRepository.findById(id)
-                .map(UserMapper::toDto)
+                .map(userMapper::toDto)
                 .orElse(null);
     }
 

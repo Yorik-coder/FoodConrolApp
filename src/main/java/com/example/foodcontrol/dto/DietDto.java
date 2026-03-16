@@ -3,9 +3,6 @@ package com.example.foodcontrol.dto;
 import java.util.List;
 
 public class DietDto {
-
-    private Long id;
-
     private String name;
 
     private String description;
@@ -15,15 +12,10 @@ public class DietDto {
     public DietDto() {
     }
 
-    public DietDto(Long id, String name, String description, List<Long> foodIds) {
-        this.id = id;
+    public DietDto(String name, String description, List<Long> foodIds) {
         this.name = name;
         this.description = description;
         this.foodIds = foodIds;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public String getName() {
@@ -36,10 +28,6 @@ public class DietDto {
 
     public List<Long> getFoodIds() {
         return foodIds;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public void setName(String name) {

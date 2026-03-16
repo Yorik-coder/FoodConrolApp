@@ -2,7 +2,6 @@ package com.example.foodcontrol.dto;
 
 public class FoodDto {
 
-    private Long id;
 
     private String name;
 
@@ -17,8 +16,7 @@ public class FoodDto {
     public FoodDto() {
     }
 
-    public FoodDto(Long id, String name, int calories, double protein, double fat, double carbs) {
-        this.id = id;
+    public FoodDto(String name, int calories, double protein, double fat, double carbs) {
         this.name = name;
         this.calories = calories;
         this.protein = protein;
@@ -26,13 +24,7 @@ public class FoodDto {
         this.carbs = carbs;
     }
 
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;

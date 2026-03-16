@@ -1,48 +1,31 @@
 package com.example.foodcontrol.mapper;
 
-
 import com.example.foodcontrol.dto.DietDto;
 import com.example.foodcontrol.entity.Diet;
 import com.example.foodcontrol.entity.Food;
-
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class DietMapper {
+@Mapper(componentModel = "spring")
+public interface DietMapper {
 
-    public static DietDto toDto(Diet diet) {
-        if (diet == null) {
-            return null;
+    @Mapping(target = "foodIds", source = "foods")
+    DietDto toDto(Diet diet);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "foods", source = "foods")
+    Diet toEntity(DietDto dto, List<Food> foods);
+
+    // foods -> foodIds
+    default List<Long> mapFoodsToIds(List<Food> foods) {
+        if (foods == null) {
+            return Collections.emptyList();
         }
 
-        DietDto dto = new DietDto();
-        dto.setId(diet.getId());
-        dto.setName(diet.getName());
-        dto.setDescription(diet.getDescription());
-
-        if (diet.getFoods() != null) {
-            List<Long> foodIds = diet.getFoods()
-                    .stream()
-                    .map(Food::getId)
-                    .collect(Collectors.toList());
-
-            dto.setFoodIds(foodIds);
-        }
-
-        return dto;
-    }
-
-    public static Diet toEntity(DietDto dto, List<Food> foods) {
-        if (dto == null) {
-            return null;
-        }
-
-        Diet diet = new Diet();
-        diet.setId(dto.getId());
-        diet.setName(dto.getName());
-        diet.setDescription(dto.getDescription());
-        diet.setFoods(foods);
-
-        return diet;
+        return foods.stream()
+                .map(Food::getId)
+                .toList();
     }
 }

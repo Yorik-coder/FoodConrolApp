@@ -1,8 +1,6 @@
 package com.example.foodcontrol.dto;
 
 public class MealFoodDto {
-
-    private Long id;
     private Long mealId;
     private Long foodId;
     private double grams;
@@ -10,15 +8,10 @@ public class MealFoodDto {
     public MealFoodDto() {
     }
 
-    public MealFoodDto(Long id, Long mealId, Long foodId, double grams) {
-        this.id = id;
+    public MealFoodDto(Long mealId, Long foodId, double grams) {
         this.mealId = mealId;
         this.foodId = foodId;
         this.grams = grams;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public Long getMealId() {
@@ -31,10 +24,6 @@ public class MealFoodDto {
 
     public double getGrams() {
         return grams;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public void setMealId(Long mealId) {
