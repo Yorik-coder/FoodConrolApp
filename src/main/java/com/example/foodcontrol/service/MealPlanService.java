@@ -36,19 +36,22 @@ public class MealPlanService {
         DayPlan dayPlan = new DayPlan();
         dayPlan.setDate(dayPlanDto.getDate());
         dayPlan.setUser(user);
-        DayPlan savedDayPlan = dayPlanRepository.save(dayPlan); // сразу в БД
+        DayPlan savedDayPlan = dayPlanRepository.save(dayPlan); // фиксируется сразу
 
+        int count = 0;
         for (MealDto mealDto : mealDtos) {
             Meal meal = new Meal();
             meal.setName(mealDto.getName());
             meal.setDayPlan(savedDayPlan);
-            mealRepository.save(meal); // каждый Meal сохраняется отдельно
-        }
+            mealRepository.save(meal); // каждый Meal фиксируется сразу
+            count++;
 
-        if (!mealDtos.isEmpty()) {
-            throw new IllegalStateException("Simulated error after saving some meals");
-        }
-    }
+            // Искусственная ошибка после сохранения второго Meal было до этого !mealDtos.isEmpty
+            if (count == 2) {
+                throw new IllegalStateException("Simulated error after saving 2 meals");
+            }
+       }
+}
 
    @Transactional
     public void createDayPlanWithMealsWithTransaction(DayPlanDto dayPlanDto, List<MealDto> mealDtos) {

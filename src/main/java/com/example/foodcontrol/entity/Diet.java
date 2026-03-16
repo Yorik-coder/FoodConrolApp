@@ -25,6 +25,7 @@ public class Diet {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
     private String description;
 
     @ManyToMany(
