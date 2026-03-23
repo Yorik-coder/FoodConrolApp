@@ -18,7 +18,7 @@ public interface DayPlanMapper {
     default List<Long> mapMealsToIds(List<Meal> meals) {
 
         if (meals == null) {
-        return Collections.emptyList();
+            return Collections.emptyList();
         }
 
         return meals.stream()

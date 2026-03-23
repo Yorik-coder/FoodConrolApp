@@ -36,24 +36,23 @@ public class MealPlanService {
         DayPlan dayPlan = new DayPlan();
         dayPlan.setDate(dayPlanDto.getDate());
         dayPlan.setUser(user);
-        DayPlan savedDayPlan = dayPlanRepository.save(dayPlan); // фиксируется сразу
+        DayPlan savedDayPlan = dayPlanRepository.save(dayPlan); 
 
         int count = 0;
         for (MealDto mealDto : mealDtos) {
             Meal meal = new Meal();
             meal.setName(mealDto.getName());
             meal.setDayPlan(savedDayPlan);
-            mealRepository.save(meal); // каждый Meal фиксируется сразу
+            mealRepository.save(meal); 
             count++;
 
-            // Искусственная ошибка после сохранения второго Meal было до этого !mealDtos.isEmpty
             if (count == 2) {
                 throw new IllegalStateException("Simulated error after saving 2 meals");
             }
-       }
-}
+        }
+    }
 
-   @Transactional
+    @Transactional
     public void createDayPlanWithMealsWithTransaction(DayPlanDto dayPlanDto, List<MealDto> mealDtos) {
         User user = userRepository.findById(dayPlanDto.getUserId())
                 .orElseThrow(() -> new NoSuchElementException("User not found with id: " + dayPlanDto.getUserId()));
@@ -65,10 +64,10 @@ public class MealPlanService {
         for (MealDto mealDto : mealDtos) {
             Meal meal = new Meal();
             meal.setName(mealDto.getName());
-            dayPlan.addMeal(meal); // устанавливает двунаправленную связь
+            dayPlan.addMeal(meal); 
         }
 
-        dayPlanRepository.save(dayPlan); // сохраняется DayPlan + все Meal (каскадно)
+        dayPlanRepository.save(dayPlan); 
 
         if (!mealDtos.isEmpty()) {
             throw new IllegalStateException("Simulated error after saving some meals");

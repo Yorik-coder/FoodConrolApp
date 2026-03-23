@@ -28,7 +28,6 @@ public class MealFoodController {
 
     @PutMapping("/{id}")
     public MealFoodDto updateGrams(@PathVariable Long id, @RequestBody MealFoodDto dto) {
-        // Можно принимать только grams, но для простоты используем тот же DTO
         return mealFoodService.updateGrams(id, dto);
     }
 

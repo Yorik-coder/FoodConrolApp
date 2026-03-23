@@ -21,12 +21,12 @@ public class MealFood {
     @Column(nullable = false)
     private double grams;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "meal_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "meal_id", nullable = false)
     private Meal meal;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "food_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "food_id", nullable = false)
     private Food food;
 
     public MealFood() {
