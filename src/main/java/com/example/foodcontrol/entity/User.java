@@ -75,7 +75,6 @@ public class User {
         this.dayPlans = dayPlans;
     }
 
-    // helper methods (важно для bidirectional связей)
 
     public void addDayPlan(DayPlan plan) {
         dayPlans.add(plan);

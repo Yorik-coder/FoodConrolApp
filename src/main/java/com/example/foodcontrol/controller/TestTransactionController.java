@@ -2,6 +2,8 @@ package com.example.foodcontrol.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,16 +34,16 @@ public class TestTransactionController {
     }
 
     @PostMapping("/create-plan-with-tx")
-    public String createWithTransaction(@RequestBody DayPlanWithMealsRequest request) {
+    public ResponseEntity<String> createWithTransaction(@RequestBody DayPlanWithMealsRequest request) {
         try {
             mealPlanService.createDayPlanWithMealsWithTransaction(request.getDayPlan(), request.getMeals());
-            return "Success";
+            return ResponseEntity.ok("Success");
         } catch (Exception e) {
-            return "Transaction rolled back: " + e.getMessage();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Transaction rolled back: " + e.getMessage());
         }
     }
 
-    // Вспомогательный класс для приёма данных
     public static class DayPlanWithMealsRequest {
         private DayPlanDto dayPlan;
         private List<MealDto> meals;

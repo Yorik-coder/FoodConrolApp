@@ -32,7 +32,7 @@ public class MealService {
                 .orElseThrow();
 
         Meal meal = new Meal();
-        meal.setName(dto.getName());
+        meal.setMealType(dto.getMealType());
         meal.setDayPlan(plan);
 
         Meal saved = mealRepository.save(meal);

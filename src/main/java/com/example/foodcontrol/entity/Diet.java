@@ -48,7 +48,6 @@ public class Diet {
         this.description = description;
     }
 
-    //getters and setters
 
     public Long getId() {
         return id;

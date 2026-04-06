@@ -37,7 +37,6 @@ public class MealFood {
         this.grams = grams;
     }
 
-    //getters and setters
 
     public Long getId() {
         return id;

@@ -41,7 +41,7 @@ public class MealPlanService {
         int count = 0;
         for (MealDto mealDto : mealDtos) {
             Meal meal = new Meal();
-            meal.setName(mealDto.getName());
+            meal.setMealType(mealDto.getMealType());
             meal.setDayPlan(savedDayPlan);
             mealRepository.save(meal); 
             count++;
@@ -63,14 +63,14 @@ public class MealPlanService {
 
         for (MealDto mealDto : mealDtos) {
             Meal meal = new Meal();
-            meal.setName(mealDto.getName());
+            meal.setMealType(mealDto.getMealType());
             dayPlan.addMeal(meal); 
         }
 
         dayPlanRepository.save(dayPlan); 
 
         if (!mealDtos.isEmpty()) {
-            throw new IllegalStateException("Simulated error after saving some meals");
+            throw new IllegalStateException("Simulated error");
         }
     }
 }

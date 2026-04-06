@@ -17,8 +17,7 @@ public interface DietMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "foods", source = "foods")
     Diet toEntity(DietDto dto, List<Food> foods);
-
-    // foods -> foodIds
+    
     default List<Long> mapFoodsToIds(List<Food> foods) {
         if (foods == null) {
             return Collections.emptyList();

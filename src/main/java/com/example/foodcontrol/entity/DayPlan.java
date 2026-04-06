@@ -79,7 +79,6 @@ public class DayPlan {
         this.meals = meals;
     }
 
-    // helper methods
 
     public void addMeal(Meal meal) {
         meals.add(meal);

@@ -48,7 +48,6 @@ public class Food {
         this.carbs = carbs;
     }
 
-    //getters and setters
 
     public Long getId() {
         return id;
