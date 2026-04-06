@@ -20,7 +20,11 @@ public class ServiceExecutionTimeAspect {
             return joinPoint.proceed();
         } finally {
             long elapsedMs = (System.nanoTime() - start) / 1_000_000;
-            LOGGER.info("Service method {} executed in {} ms", joinPoint.getSignature().toShortString(), elapsedMs);
+            if (LOGGER.isInfoEnabled()) {
+                LOGGER.info("Service method {} executed in {} ms",
+                        joinPoint.getSignature().toShortString(),
+                        elapsedMs);
+            }
         }
     }
 }
