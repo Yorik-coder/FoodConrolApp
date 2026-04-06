@@ -2,6 +2,12 @@ package com.example.foodcontrol.controller;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +23,8 @@ import com.example.foodcontrol.service.FoodService;
 
 @RestController
 @RequestMapping("/foods")
+@Validated
+@Tag(name = "Foods", description = "Operations for foods")
 public class FoodController {
 
     private final FoodService foodService;
@@ -26,18 +34,21 @@ public class FoodController {
     }
 
     @PostMapping
-    public FoodDto createFood(@RequestBody FoodDto dto) {
+    @Operation(summary = "Create food")
+    public FoodDto createFood(@Valid @RequestBody FoodDto dto) {
         return foodService.createFood(dto);
     }
 
     @GetMapping("/{id}")
-    public FoodDto getFoodById(@PathVariable Long id) {
+    @Operation(summary = "Get food by id")
+    public FoodDto getFoodById(@PathVariable @Positive Long id) {
         return foodService.getFoodById(id);
     }
 
     @GetMapping
+    @Operation(summary = "Get foods with optional min-calories filter")
     public List<FoodDto> getFoods(
-            @RequestParam(required = false) Integer minCalories
+            @RequestParam(required = false) @PositiveOrZero Integer minCalories
     ) {
 
         if (minCalories != null) {
@@ -48,15 +59,17 @@ public class FoodController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Update food")
     public FoodDto updateFood(
-            @PathVariable Long id,
-            @RequestBody FoodDto dto
+            @PathVariable @Positive Long id,
+            @Valid @RequestBody FoodDto dto
     ) {
         return foodService.updateFood(id, dto);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteFood(@PathVariable Long id) {
+    @Operation(summary = "Delete food")
+    public void deleteFood(@PathVariable @Positive Long id) {
         foodService.deleteFood(id);
     }
 }

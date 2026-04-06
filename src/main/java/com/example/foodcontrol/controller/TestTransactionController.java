@@ -2,6 +2,11 @@ package com.example.foodcontrol.controller;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +20,7 @@ import com.example.foodcontrol.service.MealPlanService;
 
 @RestController
 @RequestMapping("/test")
+@Tag(name = "Transactions", description = "Transaction behavior test endpoints")
 public class TestTransactionController {
 
     private final MealPlanService mealPlanService;
@@ -24,7 +30,8 @@ public class TestTransactionController {
     }
 
     @PostMapping("/create-plan-without-tx")
-    public String createWithoutTransaction(@RequestBody DayPlanWithMealsRequest request) {
+    @Operation(summary = "Create plan without transaction")
+    public String createWithoutTransaction(@Valid @RequestBody DayPlanWithMealsRequest request) {
         try {
             mealPlanService.createDayPlanWithMealsWithoutTransaction(request.getDayPlan(), request.getMeals());
             return "Success (should not happen)";
@@ -34,7 +41,8 @@ public class TestTransactionController {
     }
 
     @PostMapping("/create-plan-with-tx")
-    public ResponseEntity<String> createWithTransaction(@RequestBody DayPlanWithMealsRequest request) {
+    @Operation(summary = "Create plan with transaction")
+    public ResponseEntity<String> createWithTransaction(@Valid @RequestBody DayPlanWithMealsRequest request) {
         try {
             mealPlanService.createDayPlanWithMealsWithTransaction(request.getDayPlan(), request.getMeals());
             return ResponseEntity.ok("Success");
@@ -44,8 +52,14 @@ public class TestTransactionController {
         }
     }
 
+    @Schema(description = "Payload for transaction test endpoints")
     public static class DayPlanWithMealsRequest {
+        @NotNull(message = "dayPlan is required")
+        @Valid
         private DayPlanDto dayPlan;
+
+        @NotNull(message = "meals is required")
+        @Valid
         private List<MealDto> meals;
 
         public DayPlanDto getDayPlan() { return dayPlan; }

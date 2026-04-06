@@ -14,15 +14,20 @@ public class FoodService {
 
     private final FoodRepository foodRepository;
     private final FoodMapper foodMapper;
+    private final DayPlanService dayPlanService;
 
-    public FoodService(FoodRepository foodRepository, FoodMapper foodMapper) {
+    public FoodService(FoodRepository foodRepository,
+                       FoodMapper foodMapper,
+                       DayPlanService dayPlanService) {
         this.foodRepository = foodRepository;
         this.foodMapper = foodMapper;
+        this.dayPlanService = dayPlanService;
     }
 
     public FoodDto createFood(FoodDto dto) {
         Food food = foodMapper.toEntity(dto);
         Food saved = foodRepository.save(food);
+        dayPlanService.invalidateSearchCache();
         return foodMapper.toDto(saved);
     }
 
@@ -62,11 +67,13 @@ public class FoodService {
         food.setCarbs(dto.getCarbs());
 
         Food saved = foodRepository.save(food);
+        dayPlanService.invalidateSearchCache();
 
         return foodMapper.toDto(saved);
     }
 
     public void deleteFood(Long id) {
         foodRepository.deleteById(id);
+        dayPlanService.invalidateSearchCache();
     }
 }

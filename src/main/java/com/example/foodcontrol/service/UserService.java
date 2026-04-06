@@ -13,12 +13,15 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final DayPlanService dayPlanService;
 
     public UserService(UserRepository userRepository,
-                       UserMapper userMapper) {
+                       UserMapper userMapper,
+                       DayPlanService dayPlanService) {
 
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.dayPlanService = dayPlanService;
     }
 
     public UserDto createUser(UserDto dto) {
@@ -26,6 +29,7 @@ public class UserService {
         User user = userMapper.toEntity(dto);
 
         User saved = userRepository.save(user);
+        dayPlanService.invalidateSearchCache();
 
         return userMapper.toDto(saved);
     }
@@ -47,5 +51,6 @@ public class UserService {
 
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
+        dayPlanService.invalidateSearchCache();
     }
 }

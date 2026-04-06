@@ -18,16 +18,19 @@ public class MealFoodService {
     private final MealRepository mealRepository;
     private final FoodRepository foodRepository;
     private final MealFoodMapper mealFoodMapper;
+    private final DayPlanService dayPlanService;
 
     public MealFoodService(MealFoodRepository mealFoodRepository,
                            MealRepository mealRepository,
                            FoodRepository foodRepository,
-                           MealFoodMapper mealFoodMapper) {
+                           MealFoodMapper mealFoodMapper,
+                           DayPlanService dayPlanService) {
 
         this.mealFoodRepository = mealFoodRepository;
         this.mealRepository = mealRepository;
         this.foodRepository = foodRepository;
         this.mealFoodMapper = mealFoodMapper;
+        this.dayPlanService = dayPlanService;
     }
 
     public MealFoodDto addFoodToMeal(MealFoodDto dto) {
@@ -44,6 +47,7 @@ public class MealFoodService {
         mealFood.setGrams(dto.getGrams());
 
         MealFood saved = mealFoodRepository.save(mealFood);
+        dayPlanService.invalidateSearchCache();
 
         return mealFoodMapper.toDto(saved);
     }
@@ -56,6 +60,7 @@ public class MealFoodService {
         mealFood.setGrams(dto.getGrams());
 
         MealFood updated = mealFoodRepository.save(mealFood);
+        dayPlanService.invalidateSearchCache();
         return mealFoodMapper.toDto(updated);
     }
 
@@ -63,5 +68,6 @@ public class MealFoodService {
         MealFood mealFood = mealFoodRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "MealFood not found with id: " + id));
         mealFoodRepository.delete(mealFood);
+        dayPlanService.invalidateSearchCache();
     }
 }

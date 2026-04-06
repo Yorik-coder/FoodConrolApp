@@ -20,13 +20,16 @@ public class MealPlanService {
     private final UserRepository userRepository;
     private final DayPlanRepository dayPlanRepository;
     private final MealRepository mealRepository;
+    private final DayPlanService dayPlanService;
 
     public MealPlanService(UserRepository userRepository,
                            DayPlanRepository dayPlanRepository,
-                           MealRepository mealRepository) {
+                           MealRepository mealRepository,
+                           DayPlanService dayPlanService) {
         this.userRepository = userRepository;
         this.dayPlanRepository = dayPlanRepository;
         this.mealRepository = mealRepository;
+        this.dayPlanService = dayPlanService;
     }
 
     public void createDayPlanWithMealsWithoutTransaction(DayPlanDto dayPlanDto, List<MealDto> mealDtos) {
@@ -47,9 +50,12 @@ public class MealPlanService {
             count++;
 
             if (count == 2) {
+                dayPlanService.invalidateSearchCache();
                 throw new IllegalStateException("Simulated error after saving 2 meals");
             }
         }
+
+        dayPlanService.invalidateSearchCache();
     }
 
     @Transactional
@@ -68,6 +74,7 @@ public class MealPlanService {
         }
 
         dayPlanRepository.save(dayPlan); 
+        dayPlanService.invalidateSearchCache();
 
         if (!mealDtos.isEmpty()) {
             throw new IllegalStateException("Simulated error");

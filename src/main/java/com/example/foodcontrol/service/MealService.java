@@ -16,14 +16,17 @@ public class MealService {
     private final MealRepository mealRepository;
     private final DayPlanRepository dayPlanRepository;
     private final MealMapper mealMapper;
+    private final DayPlanService dayPlanService;
 
     public MealService(MealRepository mealRepository,
                        DayPlanRepository dayPlanRepository,
-                       MealMapper mealMapper) {
+                       MealMapper mealMapper,
+                       DayPlanService dayPlanService) {
 
         this.mealRepository = mealRepository;
         this.dayPlanRepository = dayPlanRepository;
         this.mealMapper = mealMapper;
+        this.dayPlanService = dayPlanService;
     }
 
     public MealDto createMeal(MealDto dto) {
@@ -36,6 +39,7 @@ public class MealService {
         meal.setDayPlan(plan);
 
         Meal saved = mealRepository.save(meal);
+        dayPlanService.invalidateSearchCache();
 
         return mealMapper.toDto(saved);
     }
@@ -57,5 +61,6 @@ public class MealService {
 
     public void deleteMeal(Long id) {
         mealRepository.deleteById(id);
+        dayPlanService.invalidateSearchCache();
     }
 }
