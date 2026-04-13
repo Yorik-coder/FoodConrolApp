@@ -12,6 +12,16 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface DayPlanRepository extends JpaRepository<DayPlan, Long> {
+    interface DayPlanNativeRow {
+        Long getId();
+
+        LocalDate getDate();
+
+        Long getUserId();
+
+        String getMealIdsCsv();
+    }
+
     @EntityGraph(attributePaths = {"meals"})
     List<DayPlan> findAll();
 
@@ -43,9 +53,10 @@ public interface DayPlanRepository extends JpaRepository<DayPlan, Long> {
               and (:toDate is null or dp.date <= :toDate)
             """
     )
+    @EntityGraph(attributePaths = {"meals"})
     Page<DayPlan> searchWithNestedFiltersJpql(
         @Param("userNamePattern") String userNamePattern,
-      @Param("mealType") String mealType,
+        @Param("mealType") String mealType,
         @Param("foodNamePattern") String foodNamePattern,
         @Param("fromDate") LocalDate fromDate,
         @Param("toDate") LocalDate toDate,
@@ -54,7 +65,11 @@ public interface DayPlanRepository extends JpaRepository<DayPlan, Long> {
 
     @Query(
         value = """
-            select distinct dp.*
+        select
+          dp.id as id,
+          dp.date as date,
+          dp.user_id as userId,
+          string_agg(distinct cast(m.id as text), ',') as mealIdsCsv
             from day_plans dp
             join users u on u.id = dp.user_id
             left join meals m on m.day_plan_id = dp.id
@@ -65,6 +80,7 @@ public interface DayPlanRepository extends JpaRepository<DayPlan, Long> {
               and (:foodName is null or lower(f.name) like lower(concat('%', :foodName, '%')))
               and (:fromDate is null or dp.date >= :fromDate)
               and (:toDate is null or dp.date <= :toDate)
+        group by dp.id, dp.date, dp.user_id
             """,
         countQuery = """
             select count(distinct dp.id)
@@ -81,7 +97,7 @@ public interface DayPlanRepository extends JpaRepository<DayPlan, Long> {
             """,
         nativeQuery = true
     )
-    Page<DayPlan> searchWithNestedFiltersNative(
+    Page<DayPlanNativeRow> searchWithNestedFiltersNative(
         @Param("userName") String userName,
         @Param("mealType") String mealType,
         @Param("foodName") String foodName,

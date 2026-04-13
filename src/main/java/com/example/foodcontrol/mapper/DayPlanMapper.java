@@ -11,6 +11,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface DayPlanMapper {
 
+    @Mapping(target = "id", source = "id")
     @Mapping(target = "userId", source = "user.id")
     @Mapping(target = "mealIds", source = "meals")
     DayPlanDto toDto(DayPlan plan);

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -66,5 +67,12 @@ public class DayPlanController {
     @Operation(summary = "Delete day plan by id")
     public void deletePlan(@PathVariable @Positive Long id) {
         dayPlanService.deletePlan(id);
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Update day plan by id")
+    public DayPlanDto updatePlan(@PathVariable @Positive Long id,
+                                 @Valid @RequestBody DayPlanDto dto) {
+        return dayPlanService.updatePlan(id, dto);
     }
 }

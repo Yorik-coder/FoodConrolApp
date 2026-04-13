@@ -1,5 +1,6 @@
 package com.example.foodcontrol.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
@@ -10,6 +11,10 @@ import java.util.List;
 
 @Schema(description = "Day plan payload")
 public class DayPlanDto {
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @Schema(description = "Day plan id", example = "10", accessMode = Schema.AccessMode.READ_ONLY)
+    private Long id;
 
     @NotNull(message = "date is required")
     @FutureOrPresent(message = "date must be today or in the future")
@@ -33,6 +38,10 @@ public class DayPlanDto {
         this.mealIds = mealIds;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public LocalDate getDate() {
         return date;
     }
@@ -43,6 +52,10 @@ public class DayPlanDto {
 
     public List<Long> getMealIds() {
         return mealIds;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public void setDate(LocalDate date) {

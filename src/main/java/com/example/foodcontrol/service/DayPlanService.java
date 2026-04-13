@@ -16,8 +16,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 @Service
 public class DayPlanService {
@@ -73,6 +76,21 @@ public class DayPlanService {
         invalidateSearchCache();
     }
 
+    public DayPlanDto updatePlan(Long id, DayPlanDto dto) {
+        DayPlan existing = dayPlanRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("DayPlan not found with id: " + id));
+
+        User user = userRepository.findById(dto.getUserId())
+                .orElseThrow(() -> new NoSuchElementException("User not found with id: " + dto.getUserId()));
+
+        existing.setDate(dto.getDate());
+        existing.setUser(user);
+
+        DayPlan updated = dayPlanRepository.save(existing);
+        invalidateSearchCache();
+        return dayPlanMapper.toDto(updated);
+    }
+
     public synchronized void invalidateSearchCache() {
         LOGGER.info("DayPlan search cache invalidated, previous size={}", searchCache.size());
         searchCache.clear();
@@ -112,25 +130,29 @@ public class DayPlanService {
 
         LOGGER.info("DayPlan search cache MISS: pageable={}, useNative={}", pageable, useNativeQuery);
 
-        Page<DayPlan> searchResult = useNativeQuery
-                ? dayPlanRepository.searchWithNestedFiltersNative(
-                        normalizedUserName,
+        Page<DayPlanDto> mapped;
+        if (useNativeQuery) {
+            Page<DayPlanRepository.DayPlanNativeRow> nativeResult = dayPlanRepository.searchWithNestedFiltersNative(
+                normalizedUserName,
                 mealTypeName,
-                        normalizedFoodName,
-                        fromDate,
-                        toDate,
-                        pageable
-                )
-                : dayPlanRepository.searchWithNestedFiltersJpql(
-                    userNamePattern,
-                    mealTypeName,
-                    foodNamePattern,
-                        fromDate,
-                        toDate,
-                        pageable
-                );
+                normalizedFoodName,
+                fromDate,
+                toDate,
+                pageable
+            );
+            mapped = nativeResult.map(this::toDtoForNative);
+        } else {
+            Page<DayPlan> jpqlResult = dayPlanRepository.searchWithNestedFiltersJpql(
+                userNamePattern,
+                mealTypeName,
+                foodNamePattern,
+                fromDate,
+                toDate,
+                pageable
+            );
+            mapped = jpqlResult.map(dayPlanMapper::toDto);
+        }
 
-        Page<DayPlanDto> mapped = searchResult.map(dayPlanMapper::toDto);
         searchCache.put(key, mapped);
         LOGGER.info("DayPlan search cache STORE: totalElements={}, cacheSize={}",
             mapped.getTotalElements(), searchCache.size());
@@ -147,5 +169,24 @@ public class DayPlanService {
 
     private String toLikePattern(String value) {
         return value == null ? null : "%" + value + "%";
+    }
+
+    private DayPlanDto toDtoForNative(DayPlanRepository.DayPlanNativeRow row) {
+        DayPlanDto dto = new DayPlanDto();
+        dto.setId(row.getId());
+        dto.setDate(row.getDate());
+        dto.setUserId(row.getUserId());
+        dto.setMealIds(parseMealIdsCsv(row.getMealIdsCsv()));
+        return dto;
+    }
+
+    private List<Long> parseMealIdsCsv(String mealIdsCsv) {
+        if (mealIdsCsv == null || mealIdsCsv.isBlank()) {
+            return Collections.emptyList();
+        }
+        return Arrays.stream(mealIdsCsv.split(","))
+                .filter(part -> !part.isBlank())
+                .map(Long::valueOf)
+                .toList();
     }
 }

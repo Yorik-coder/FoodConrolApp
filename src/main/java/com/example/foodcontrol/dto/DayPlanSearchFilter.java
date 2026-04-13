@@ -12,7 +12,7 @@ import java.time.LocalDate;
 public class DayPlanSearchFilter {
 
     @Size(max = 100, message = "userName length must be <= 100")
-    @Schema(description = "User name substring", example = "ivan")
+    @Schema(description = "User name substring", example = "Иван Иванов")
     private String userName;
 
     @Schema(description = "Meal type filter", example = "BREAKFAST")
