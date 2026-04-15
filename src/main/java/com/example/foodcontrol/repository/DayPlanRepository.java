@@ -36,8 +36,8 @@ public interface DayPlanRepository extends JpaRepository<DayPlan, Long> {
             where (:userNamePattern is null or lower(u.name) like :userNamePattern)
               and (:mealType is null or cast(m.mealType as string) = :mealType)
               and (:foodNamePattern is null or lower(f.name) like :foodNamePattern)
-              and (:fromDate is null or dp.date >= :fromDate)
-              and (:toDate is null or dp.date <= :toDate)
+              and dp.date >= coalesce(:fromDate, dp.date)
+              and dp.date <= coalesce(:toDate, dp.date)
             """,
         countQuery = """
             select count(distinct dp)
@@ -49,8 +49,8 @@ public interface DayPlanRepository extends JpaRepository<DayPlan, Long> {
             where (:userNamePattern is null or lower(u.name) like :userNamePattern)
               and (:mealType is null or cast(m.mealType as string) = :mealType)
               and (:foodNamePattern is null or lower(f.name) like :foodNamePattern)
-              and (:fromDate is null or dp.date >= :fromDate)
-              and (:toDate is null or dp.date <= :toDate)
+              and dp.date >= coalesce(:fromDate, dp.date)
+              and dp.date <= coalesce(:toDate, dp.date)
             """
     )
     @EntityGraph(attributePaths = {"meals"})
@@ -78,8 +78,8 @@ public interface DayPlanRepository extends JpaRepository<DayPlan, Long> {
             where (:userName is null or lower(u.name) like lower(concat('%', :userName, '%')))
               and (:mealType is null or cast(m.meal_type as text) = :mealType)
               and (:foodName is null or lower(f.name) like lower(concat('%', :foodName, '%')))
-              and (:fromDate is null or dp.date >= :fromDate)
-              and (:toDate is null or dp.date <= :toDate)
+              and (cast(:fromDate as date) is null or dp.date >= cast(:fromDate as date))
+              and (cast(:toDate as date) is null or dp.date <= cast(:toDate as date))
         group by dp.id, dp.date, dp.user_id
             """,
         countQuery = """
@@ -92,8 +92,8 @@ public interface DayPlanRepository extends JpaRepository<DayPlan, Long> {
             where (:userName is null or lower(u.name) like lower(concat('%', :userName, '%')))
               and (:mealType is null or cast(m.meal_type as text) = :mealType)
               and (:foodName is null or lower(f.name) like lower(concat('%', :foodName, '%')))
-              and (:fromDate is null or dp.date >= :fromDate)
-              and (:toDate is null or dp.date <= :toDate)
+              and (cast(:fromDate as date) is null or dp.date >= cast(:fromDate as date))
+              and (cast(:toDate as date) is null or dp.date <= cast(:toDate as date))
             """,
         nativeQuery = true
     )

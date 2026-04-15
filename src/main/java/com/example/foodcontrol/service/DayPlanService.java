@@ -124,11 +124,11 @@ public class DayPlanService {
 
         Page<DayPlanDto> cached = searchCache.get(key);
         if (cached != null) {
-            LOGGER.info("DayPlan search cache HIT: pageable={}, useNative={}", pageable, useNativeQuery);
+            LOGGER.info("DayPlan search cache HIT");
             return cached;
         }
 
-        LOGGER.info("DayPlan search cache MISS: pageable={}, useNative={}", pageable, useNativeQuery);
+        LOGGER.info("DayPlan search cache MISS");
 
         Page<DayPlanDto> mapped;
         if (useNativeQuery) {
