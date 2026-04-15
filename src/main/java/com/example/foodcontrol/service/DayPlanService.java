@@ -11,7 +11,9 @@ import com.example.foodcontrol.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -21,11 +23,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 @Service
 public class DayPlanService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DayPlanService.class);
+    private static final int MAX_PAGE_SIZE = 100;
+    private static final Pattern SAFE_SEARCH_TEXT = Pattern.compile("[\\p{L}\\p{N}\\s'\\-]*");
+    private static final Set<String> ALLOWED_SORT_PROPERTIES = Set.of("id", "date");
 
     private final DayPlanRepository dayPlanRepository;
     private final UserRepository userRepository;
@@ -107,6 +114,7 @@ public class DayPlanService {
         LocalDate fromDate = filter.getFromDate();
         LocalDate toDate = filter.getToDate();
         boolean useNativeQuery = filter.isUseNative();
+        Pageable safePageable = sanitizePageable(pageable);
         String mealTypeName = null;
         if (mealType != null) {
             mealTypeName = mealType.name();
@@ -118,7 +126,7 @@ public class DayPlanService {
                 normalizedFoodName,
                 fromDate,
                 toDate,
-                pageable,
+                safePageable,
                 useNativeQuery
         );
 
@@ -138,7 +146,7 @@ public class DayPlanService {
                 normalizedFoodName,
                 fromDate,
                 toDate,
-                pageable
+                safePageable
             );
             mapped = nativeResult.map(this::toDtoForNative);
         } else {
@@ -148,7 +156,7 @@ public class DayPlanService {
                 foodNamePattern,
                 fromDate,
                 toDate,
-                pageable
+                safePageable
             );
             mapped = jpqlResult.map(dayPlanMapper::toDto);
         }
@@ -164,11 +172,33 @@ public class DayPlanService {
             return null;
         }
         String trimmed = value.trim();
-        return trimmed.isEmpty() ? null : trimmed.toLowerCase();
+        if (trimmed.isEmpty()) {
+            return null;
+        }
+        if (!SAFE_SEARCH_TEXT.matcher(trimmed).matches()) {
+            throw new IllegalArgumentException("Search filter contains unsupported characters");
+        }
+        return trimmed.toLowerCase();
     }
 
     private String toLikePattern(String value) {
         return value == null ? null : "%" + value + "%";
+    }
+
+    private Pageable sanitizePageable(Pageable pageable) {
+        int pageNumber = Math.max(pageable.getPageNumber(), 0);
+        int pageSize = Math.min(Math.max(pageable.getPageSize(), 1), MAX_PAGE_SIZE);
+
+        List<Sort.Order> safeOrders = pageable.getSort().stream()
+                .filter(order -> ALLOWED_SORT_PROPERTIES.contains(order.getProperty()))
+                .map(order -> new Sort.Order(order.getDirection(), order.getProperty()))
+                .toList();
+
+        Sort safeSort = safeOrders.isEmpty()
+                ? Sort.unsorted()
+            : Sort.by(safeOrders);
+
+        return PageRequest.of(pageNumber, pageSize, safeSort);
     }
 
     private DayPlanDto toDtoForNative(DayPlanRepository.DayPlanNativeRow row) {
