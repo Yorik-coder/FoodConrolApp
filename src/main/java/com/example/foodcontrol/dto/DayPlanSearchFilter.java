@@ -3,6 +3,7 @@ package com.example.foodcontrol.dto;
 import com.example.foodcontrol.entity.MealType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -12,6 +13,8 @@ import java.time.LocalDate;
 public class DayPlanSearchFilter {
 
     @Size(max = 100, message = "userName length must be <= 100")
+        @Pattern(regexp = "[\\p{L}\\p{N}\\s'\\-]*",
+            message = "userName contains unsupported characters")
     @Schema(description = "User name substring", example = "Иван Иванов")
     private String userName;
 
@@ -19,6 +22,8 @@ public class DayPlanSearchFilter {
     private MealType mealType;
 
     @Size(max = 100, message = "foodName length must be <= 100")
+        @Pattern(regexp = "[\\p{L}\\p{N}\\s'\\-]*",
+            message = "foodName contains unsupported characters")
     @Schema(description = "Food name substring", example = "egg")
     private String foodName;
 

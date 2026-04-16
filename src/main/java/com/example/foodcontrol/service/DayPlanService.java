@@ -186,8 +186,8 @@ public class DayPlanService {
     }
 
     private Pageable sanitizePageable(Pageable pageable) {
-        int pageNumber = Math.max(pageable.getPageNumber(), 0);
-        int pageSize = Math.min(Math.max(pageable.getPageSize(), 1), MAX_PAGE_SIZE);
+        int pageNumber = Math.clamp(pageable.getPageNumber(), 0, Integer.MAX_VALUE);
+        int pageSize = Math.clamp(pageable.getPageSize(), 1, MAX_PAGE_SIZE);
 
         List<Sort.Order> safeOrders = pageable.getSort().stream()
                 .filter(order -> ALLOWED_SORT_PROPERTIES.contains(order.getProperty()))
