@@ -39,6 +39,18 @@ public class FoodController {
         return foodService.createFood(dto);
     }
 
+    @PostMapping("/bulk/without-tx")
+    @Operation(summary = "Bulk create foods without transaction")
+    public List<FoodDto> bulkCreateFoodsWithoutTransaction(@Valid @RequestBody List<@Valid FoodDto> dtos) {
+        return foodService.createFoodsBulkWithoutTransaction(dtos);
+    }
+
+    @PostMapping("/bulk/with-tx")
+    @Operation(summary = "Bulk create foods with transaction")
+    public List<FoodDto> bulkCreateFoodsWithTransaction(@Valid @RequestBody List<@Valid FoodDto> dtos) {
+        return foodService.createFoodsBulkWithTransaction(dtos);
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "Get food by id")
     public FoodDto getFoodById(@PathVariable @Positive Long id) {

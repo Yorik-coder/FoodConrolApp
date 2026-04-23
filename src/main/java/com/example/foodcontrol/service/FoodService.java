@@ -5,7 +5,9 @@ import com.example.foodcontrol.entity.Food;
 import com.example.foodcontrol.mapper.FoodMapper;
 import com.example.foodcontrol.repository.FoodRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -75,5 +77,41 @@ public class FoodService {
     public void deleteFood(Long id) {
         foodRepository.deleteById(id);
         dayPlanService.invalidateSearchCache();
+    }
+
+    public List<FoodDto> createFoodsBulkWithoutTransaction(List<FoodDto> dtos) {
+        return createFoodsBulkInternal(dtos);
+    }
+
+    @Transactional
+    public List<FoodDto> createFoodsBulkWithTransaction(List<FoodDto> dtos) {
+        return createFoodsBulkInternal(dtos);
+    }
+
+    private List<FoodDto> createFoodsBulkInternal(List<FoodDto> dtos) {
+        List<FoodDto> safeDtos = Optional.ofNullable(dtos)
+                .filter(list -> !list.isEmpty())
+                .orElseThrow(() -> new IllegalArgumentException("foods list must not be empty"));
+
+        List<Food> entities = safeDtos.stream()
+                .map(foodMapper::toEntity)
+                .toList();
+
+        List<FoodDto> created = new ArrayList<>();
+        for (int i = 0; i < entities.size(); i++) {
+            Food saved = foodRepository.save(entities.get(i));
+            created.add(foodMapper.toDto(saved));
+
+            if (isFailureMarker(safeDtos.get(i))) {
+                throw new IllegalStateException("Simulated bulk failure for demo rollback");
+            }
+        }
+
+        dayPlanService.invalidateSearchCache();
+        return created;
+    }
+
+    private boolean isFailureMarker(FoodDto dto) {
+        return "__FAIL__".equalsIgnoreCase(dto.getName());
     }
 }
