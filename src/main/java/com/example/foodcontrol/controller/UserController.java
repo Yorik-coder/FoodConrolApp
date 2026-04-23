@@ -3,6 +3,8 @@ package com.example.foodcontrol.controller;
 import java.util.List;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -32,6 +34,11 @@ public class UserController {
 
     @PostMapping
     @Operation(summary = "Create user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User created"),
+            @ApiResponse(responseCode = "400", description = "Validation error"),
+            @ApiResponse(responseCode = "409", description = "User with email already exists")
+    })
     public UserDto createUser(@Valid @RequestBody UserDto dto) {
         return userService.createUser(dto);
     }
@@ -44,6 +51,11 @@ public class UserController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Get user by id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User found"),
+            @ApiResponse(responseCode = "400", description = "Invalid id"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
     public UserDto getUser(@PathVariable @Positive Long id) {
         return userService.getUserById(id);
     }

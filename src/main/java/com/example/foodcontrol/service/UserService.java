@@ -5,8 +5,11 @@ import com.example.foodcontrol.entity.User;
 import com.example.foodcontrol.mapper.UserMapper;
 import com.example.foodcontrol.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class UserService {
@@ -25,6 +28,11 @@ public class UserService {
     }
 
     public UserDto createUser(UserDto dto) {
+
+        if (userRepository.existsByEmailIgnoreCase(dto.getEmail())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "User with email already exists: " + dto.getEmail());
+        }
 
         User user = userMapper.toEntity(dto);
 
@@ -46,7 +54,7 @@ public class UserService {
 
         return userRepository.findById(id)
                 .map(userMapper::toDto)
-                .orElse(null);
+                .orElseThrow(() -> new NoSuchElementException("User not found with id: " + id));
     }
 
     public void deleteUser(Long id) {

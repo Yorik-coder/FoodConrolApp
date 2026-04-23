@@ -22,7 +22,7 @@
         </rollingPolicy>
     </appender>
 
-    <logger name="com.example.foodcontrol" level="DEBUG"/>
+    <logger name="com.example.foodcontrol" level="INFO"/>
     <logger name="org.springframework" level="INFO"/>
     <logger name="org.hibernate.SQL" level="WARN"/>
 
