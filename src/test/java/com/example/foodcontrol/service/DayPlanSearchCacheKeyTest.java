@@ -1,5 +1,6 @@
 package com.example.foodcontrol.service;
 
+import com.example.foodcontrol.cache.DayPlanSearchCacheKey;
 import com.example.foodcontrol.entity.MealType;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageRequest;

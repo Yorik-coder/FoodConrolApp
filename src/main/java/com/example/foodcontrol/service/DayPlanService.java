@@ -1,5 +1,6 @@
 package com.example.foodcontrol.service;
 
+import com.example.foodcontrol.cache.DayPlanSearchCacheKey;
 import com.example.foodcontrol.dto.DayPlanDto;
 import com.example.foodcontrol.dto.DayPlanSearchFilter;
 import com.example.foodcontrol.entity.DayPlan;

@@ -1,4 +1,4 @@
-package com.example.foodcontrol.service;
+package com.example.foodcontrol.cache;
 
 import com.example.foodcontrol.entity.MealType;
 import org.springframework.data.domain.Pageable;
