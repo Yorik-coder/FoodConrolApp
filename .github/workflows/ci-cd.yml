@@ -18,14 +18,16 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
           cache: 'maven'
-          cache-dependency-path: '**/pom.xml'
 
+          cache-dependency-path: pom.xml
 
       - name: Maven - package (skip tests)
-        run: mvn -B -f foodcontrol/pom.xml -DskipTests package
+        run: mvn -B -DskipTests package
+        working-directory: .
 
       - name: Maven - tests
-        run: mvn -B -f foodcontrol/pom.xml test
+        run: mvn -B test
+        working-directory: .
 
   docker_build_push:
     needs: build_test
