@@ -46,15 +46,17 @@ jobs:
           DB_NAME: postgres
           DB_USER: postgres
           DB_PASSWORD: ""
-        run: ./mvnw -B clean verify
+        run: chmod +x ./mvnw && ./mvnw -B clean verify
+        working-directory: foodcontrol
 
       - name: Build Docker image
         run: docker build -t foodcontrol:${{ github.sha }} .
+        working-directory: foodcontrol
 
   deploy:
     runs-on: ubuntu-latest
     needs: build-and-test
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: false
     environment:
       name: production
 
