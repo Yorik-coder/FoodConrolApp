@@ -59,6 +59,23 @@ public class MealService {
                 .orElse(null);
     }
 
+        public MealDto updateMeal(Long id, MealDto dto) {
+
+        Meal meal = mealRepository.findById(id)
+            .orElseThrow(() -> new java.util.NoSuchElementException("Meal not found with id: " + id));
+
+        DayPlan plan = dayPlanRepository.findById(dto.getDayPlanId())
+            .orElseThrow(() -> new java.util.NoSuchElementException("Day plan not found with id: " + dto.getDayPlanId()));
+
+        meal.setMealType(dto.getMealType());
+        meal.setDayPlan(plan);
+
+        Meal saved = mealRepository.save(meal);
+        dayPlanService.invalidateSearchCache();
+
+        return mealMapper.toDto(saved);
+        }
+
     public void deleteMeal(Long id) {
         mealRepository.deleteById(id);
         dayPlanService.invalidateSearchCache();

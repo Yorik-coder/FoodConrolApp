@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,6 +47,12 @@ public class DietController {
     @Operation(summary = "Get diet by id")
     public DietDto getDiet(@PathVariable @Positive Long id) {
         return dietService.getDietById(id);
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Update diet")
+    public DietDto updateDiet(@PathVariable @Positive Long id, @Valid @RequestBody DietDto dto) {
+        return dietService.updateDiet(id, dto);
     }
 
     @DeleteMapping("/{id}")

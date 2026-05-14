@@ -8,6 +8,9 @@ import jakarta.validation.constraints.Size;
 @Schema(description = "User payload")
 public class UserDto {
 
+    @Schema(description = "User id", example = "1")
+    private Long id;
+
     @NotBlank(message = "name is required")
     @Size(max = 100, message = "name length must be <= 100")
     @Schema(description = "User name", example = "Ivan Petrov")
@@ -26,6 +29,14 @@ public class UserDto {
         this.email = email;
     }
 
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;

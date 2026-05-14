@@ -14,7 +14,7 @@ import com.example.foodcontrol.dto.FoodDto;
 public class AsyncFoodTaskWorker {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AsyncFoodTaskWorker.class);
-    private static final long DEMO_DELAY_MS = 1500;
+    private static final long DEMO_DELAY_MS = 15000;
 
     private final AsyncTaskRegistry taskRegistry;
     private final FoodService foodService;

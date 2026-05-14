@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -58,6 +59,18 @@ public class UserController {
     })
     public UserDto getUser(@PathVariable @Positive Long id) {
         return userService.getUserById(id);
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Update user")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "User updated"),
+        @ApiResponse(responseCode = "400", description = "Validation error"),
+        @ApiResponse(responseCode = "404", description = "User not found"),
+        @ApiResponse(responseCode = "409", description = "User with email already exists")
+    })
+    public UserDto updateUser(@PathVariable @Positive Long id, @Valid @RequestBody UserDto dto) {
+        return userService.updateUser(id, dto);
     }
 
     @DeleteMapping("/{id}")

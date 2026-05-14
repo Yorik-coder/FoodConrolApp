@@ -1,0 +1,50 @@
+services:
+  db:
+    image: postgres:16
+    container_name: foodcontrol-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - foodcontrol_pgdata:/var/lib/postgresql/data
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: foodcontrol-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SERVER_PORT: ${SERVER_PORT:-8080}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
+
+      # Запрещаем хардкодить URL/пароли: используем переменные
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:${DB_PORT:-5432}/${POSTGRES_DB:-postgres}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-postgres}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: ${SPRING_JPA_HIBERNATE_DDL_AUTO:-validate}
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    healthcheck:
+      # actuator в pom.xml нет, поэтому делаем healthcheck через swagger (должен быть доступен).
+      # Важно: этот healthcheck требует, чтобы в runtime image был доступен curl.
+      # Если curl нет — заменим healthcheck на вариант под ваш образ.
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/swagger-ui/index.html > /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+volumes:
+  foodcontrol_pgdata:

@@ -9,6 +9,9 @@ import jakarta.validation.constraints.Size;
 @Schema(description = "Food payload")
 public class FoodDto {
 
+    @Schema(description = "Food id", example = "1")
+    private Long id;
+
     @NotBlank(message = "name is required")
     @Size(max = 120, message = "name length must be <= 120")
     @Schema(description = "Food name", example = "Chicken breast")
@@ -41,6 +44,14 @@ public class FoodDto {
         this.carbs = carbs;
     }
 
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
 
     public String getName() {

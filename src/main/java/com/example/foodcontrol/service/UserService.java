@@ -57,6 +57,27 @@ public class UserService {
                 .orElseThrow(() -> new NoSuchElementException("User not found with id: " + id));
     }
 
+    public UserDto updateUser(Long id, UserDto dto) {
+
+        User existing = userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("User not found with id: " + id));
+
+        String newEmail = dto.getEmail();
+        if (newEmail != null && !newEmail.equalsIgnoreCase(existing.getEmail())
+                && userRepository.existsByEmailIgnoreCase(newEmail)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "User with email already exists: " + newEmail);
+        }
+
+        existing.setName(dto.getName());
+        existing.setEmail(dto.getEmail());
+
+        User saved = userRepository.save(existing);
+        dayPlanService.invalidateSearchCache();
+
+        return userMapper.toDto(saved);
+    }
+
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
         dayPlanService.invalidateSearchCache();

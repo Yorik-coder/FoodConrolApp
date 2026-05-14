@@ -8,6 +8,9 @@ import java.util.List;
 
 @Schema(description = "Diet payload")
 public class DietDto {
+    @Schema(description = "Diet id", example = "1")
+    private Long id;
+
     @NotBlank(message = "name is required")
     @Size(max = 120, message = "name length must be <= 120")
     @Schema(description = "Diet name", example = "Keto")
@@ -29,6 +32,10 @@ public class DietDto {
         this.foodIds = foodIds;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public String getName() {
         return name;
     }
@@ -43,6 +50,10 @@ public class DietDto {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public void setDescription(String description) {

@@ -52,6 +52,24 @@ public class DietService {
                 .orElse(null);
     }
 
+        public DietDto updateDiet(Long id, DietDto dto) {
+
+        Diet existing = dietRepository.findById(id)
+            .orElseThrow(() -> new java.util.NoSuchElementException("Diet not found with id: " + id));
+
+        List<Long> foodIds = java.util.Optional.ofNullable(dto.getFoodIds())
+            .orElseGet(List::of);
+        List<Food> foods = foodRepository.findAllById(foodIds);
+
+        existing.setName(dto.getName());
+        existing.setDescription(dto.getDescription());
+        existing.setFoods(foods);
+
+        Diet saved = dietRepository.save(existing);
+
+        return dietMapper.toDto(saved);
+        }
+
     public void deleteDiet(Long id) {
         dietRepository.deleteById(id);
     }

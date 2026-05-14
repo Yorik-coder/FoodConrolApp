@@ -9,6 +9,9 @@ import jakarta.validation.constraints.Positive;
 
 @Schema(description = "Meal payload")
 public class MealDto {
+    @Schema(description = "Meal id", example = "1")
+    private Long id;
+
     @NotNull(message = "mealType is required")
     @Schema(description = "Meal type", example = "BREAKFAST")
     private MealType mealType;
@@ -30,6 +33,10 @@ public class MealDto {
         this.mealFoodIds = mealFoodIds;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public MealType getMealType() {
         return mealType;
     }
@@ -44,6 +51,10 @@ public class MealDto {
 
     public void setMealType(MealType mealType) {
         this.mealType = mealType;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public void setDayPlanId(Long dayPlanId) {

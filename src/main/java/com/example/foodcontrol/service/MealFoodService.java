@@ -1,5 +1,7 @@
 package com.example.foodcontrol.service;
 
+import java.util.List;
+
 import com.example.foodcontrol.dto.MealFoodDto;
 import com.example.foodcontrol.entity.Food;
 import com.example.foodcontrol.entity.Meal;
@@ -8,9 +10,9 @@ import com.example.foodcontrol.mapper.MealFoodMapper;
 import com.example.foodcontrol.repository.FoodRepository;
 import com.example.foodcontrol.repository.MealFoodRepository;
 import com.example.foodcontrol.repository.MealRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.http.HttpStatus;
 @Service
 public class MealFoodService {
 
@@ -69,5 +71,15 @@ public class MealFoodService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "MealFood not found with id: " + id));
         mealFoodRepository.delete(mealFood);
         dayPlanService.invalidateSearchCache();
+    }
+
+    public List<MealFoodDto> getMealFoods(Long mealId) {
+        List<MealFood> mealFoods = mealId == null
+                ? mealFoodRepository.findAll()
+                : mealFoodRepository.findAllByMealId(mealId);
+
+        return mealFoods.stream()
+                .map(mealFoodMapper::toDto)
+                .toList();
     }
 }
