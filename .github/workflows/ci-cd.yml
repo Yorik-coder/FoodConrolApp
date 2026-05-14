@@ -18,7 +18,7 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
           cache: 'maven'
-          cache-dependency-path: 'foodcontrol/pom.xml'
+          cache-dependency-path: 'pom.xml'
 
       - name: Maven - package (skip tests)
         run: mvn -B -DskipTests package
