@@ -2,7 +2,7 @@ name: CI/CD
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   workflow_dispatch:
 
 jobs:
@@ -18,12 +18,13 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
           cache: 'maven'
+          cache-dependency-path: 'foodcontrol/pom.xml'
 
-      - name: Build (skip tests for faster packaging)
+      - name: Maven - package (skip tests)
         run: mvn -B -DskipTests package
         working-directory: foodcontrol
 
-      - name: Test
+      - name: Maven - tests
         run: mvn -B test
         working-directory: foodcontrol
 
@@ -44,30 +45,32 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push image
+      - name: Build and push image (SHA tag + latest on main)
         uses: docker/build-push-action@v6
         with:
           context: foodcontrol
           push: true
           tags: |
             ghcr.io/${{ github.repository_owner }}/foodcontrol:${{ github.sha }}
+            ghcr.io/${{ github.repository_owner }}/foodcontrol:latest
 
   deploy_heroku:
     needs: docker_build_push
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     steps:
       - name: Deploy to Heroku (container)
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
           HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
-          IMAGE: ghcr.io/${{ github.repository_owner }}/foodcontrol:${{ github.sha }}
+          IMAGE: ghcr.io/${{ github.repository_owner }}/foodcontrol:latest
         run: |
           echo "Deploying $IMAGE to Heroku app $HEROKU_APP_NAME"
           curl -sS -X PATCH "https://api.heroku.com/apps/${HEROKU_APP_NAME}/formation" \
             -H "Authorization: Bearer ${HEROKU_API_KEY}" \
             -H "Accept: application/vnd.heroku+json; version=3" \
             -H "Content-Type: application/json" \
-            -d "{\"updates\": [{\"type\": \"web\", \"docker_image\": \"${IMAGE}\"}]}" || true
+            -d "{\"updates\": [{\"type\": \"web\", \"docker_image\": \"${IMAGE}\"}]}" 
 
   healthcheck:
     needs: deploy_heroku
