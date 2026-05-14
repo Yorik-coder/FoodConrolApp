@@ -59,7 +59,7 @@ jobs:
           fi
 
       - name: Build Docker image
-        run: docker build -t foodcontrol:${{ github.sha }} ./foodcontrol
+        run: docker build -t foodcontrol:${{ github.sha }} .
 
   deploy:
     runs-on: ubuntu-latest
