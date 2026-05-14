@@ -154,7 +154,7 @@ jobs:
           HEALTH_URL="$APP_URL/actuator/health"
           echo "Using healthcheck URL: $HEALTH_URL"
 
-          for i in {1..36}; do
+          for i in {1..4}; do
             RESPONSE=$(curl -sS -L --max-time 15 -w "\nHTTP_CODE:%{http_code}" "$HEALTH_URL" || true)
             BODY=$(echo "$RESPONSE" | sed '$d')
             HTTP_CODE=$(echo "$RESPONSE" | tail -n1 | sed 's/HTTP_CODE://')
