@@ -46,7 +46,17 @@ jobs:
           DB_NAME: postgres
           DB_USER: postgres
           DB_PASSWORD: ""
-        run: chmod +x ./foodcontrol/mvnw && ./foodcontrol/mvnw -B clean verify
+        run: |
+          if [ -f ./mvnw ]; then
+            chmod +x ./mvnw
+            ./mvnw -B clean verify
+          elif [ -f ./foodcontrol/mvnw ]; then
+            chmod +x ./foodcontrol/mvnw
+            ./foodcontrol/mvnw -B clean verify
+          else
+            echo "mvnw not found in ./mvnw or ./foodcontrol/mvnw"
+            exit 1
+          fi
 
       - name: Build Docker image
         run: docker build -t foodcontrol:${{ github.sha }} ./foodcontrol
