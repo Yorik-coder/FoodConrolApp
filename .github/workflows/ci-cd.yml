@@ -124,7 +124,7 @@ jobs:
             SPRING_DATASOURCE_URL="$SPRING_DATASOURCE_URL" \
             SPRING_DATASOURCE_USERNAME="$SPRING_DATASOURCE_USERNAME" \
             SPRING_DATASOURCE_PASSWORD="$SPRING_DATASOURCE_PASSWORD" \
-            LOGGING_CONFIG="classpath:logback-heroku.xml" \
+            LOGGING_CONFIG="classpath:logback-spring.xml" \
             --app "$HEROKU_APP_NAME"
 
           heroku config:unset JAVA_OPTS --app "$HEROKU_APP_NAME" || true
