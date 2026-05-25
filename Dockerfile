@@ -1,5 +1,3 @@
-# syntax=docker/dockerfile:1
-
 FROM eclipse-temurin:21-jdk AS build
 WORKDIR /workspace
 
@@ -22,7 +20,7 @@ WORKDIR /app
 
 RUN useradd -r -u 1001 appuser
 
-# нужен wget для HEALTHCHECK
+
 RUN apt-get update && apt-get install -y --no-install-recommends wget && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build /workspace/target/*.jar /app/app.jar
